@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.storage;
+package ru.practicum.shareit.item.repository;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Data
 @Component
-public class InMemoryItemStorage implements ItemStorage {
+public class InMemoryItemRepository implements ItemRepository {
 
     private Map<Long, Item> items = new HashMap<>();
     private Long id = 1L;

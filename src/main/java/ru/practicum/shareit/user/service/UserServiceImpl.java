@@ -2,10 +2,10 @@ package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.mapper.EntityMapper;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,34 +14,34 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
-    private final EntityMapper mapper;
+    private final UserRepository userRepository;
+    private final UserMapper mapper;
 
     @Override
     public UserDto createUser(User u) {
-        return mapper.toUserDto(userStorage.createUser(u));
+        return mapper.toUserDto(userRepository.createUser(u));
     }
 
     @Override
     public UserDto updateUser(User u, Long userId) {
-        return mapper.toUserDto(userStorage.updateUser(u, userId));
+        return mapper.toUserDto(userRepository.updateUser(u, userId));
     }
 
     @Override
     public UserDto getUser(Long id) {
-        return mapper.toUserDto(userStorage.getUser(id));
+        return mapper.toUserDto(userRepository.getUser(id));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return userStorage.getAllUsers().stream()
+        return userRepository.getAllUsers().stream()
                 .map(mapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(Long id) {
-        userStorage.deleteUser(id);
+        userRepository.deleteUser(id);
     }
 
 }

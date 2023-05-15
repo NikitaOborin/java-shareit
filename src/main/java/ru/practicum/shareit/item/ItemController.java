@@ -26,13 +26,12 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
-    private final UserService userService;
 
     @PostMapping
     public ItemDto createItem(@RequestBody @Valid ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("POST /items : user ID {} creates item from DTO - {}", userId, itemDto);
-        return itemService.createItem(userService.getUser(userId), itemDto);
+        return itemService.createItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
