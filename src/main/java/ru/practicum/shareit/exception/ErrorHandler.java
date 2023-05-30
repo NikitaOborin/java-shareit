@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions;
+package ru.practicum.shareit.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,4 +39,5 @@ public class ErrorHandler {
     public ErrorResponse unsupportedState(final UnsupportedState e) {
         return new ErrorResponse(e.getMessage());
     }
+
 }
