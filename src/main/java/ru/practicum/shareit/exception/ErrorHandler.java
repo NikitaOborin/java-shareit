@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions;
+package ru.practicum.shareit.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,13 +12,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> entityNotFoundException(final ru.practicum.shareit.exceptions.EntityNotFoundException e) {
+    public Map<String, String> entityNotFoundException(final ru.practicum.shareit.exception.EntityNotFoundException e) {
         return Map.of("404", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> conflictException(final ru.practicum.shareit.exceptions.ConflictException e) {
+    public Map<String, String> conflictException(final ru.practicum.shareit.exception.ConflictException e) {
         return Map.of("409", e.getMessage());
     }
 
