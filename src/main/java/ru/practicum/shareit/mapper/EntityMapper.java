@@ -17,7 +17,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface EntityMapper {
+public interface EntityMapper { //один маппер на все энтити, понимаю, что так не делают, позвольте сделать исключение мне)
 
     Item toItem(ItemDto itemDto);
 
