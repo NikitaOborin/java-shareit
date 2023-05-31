@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.AnswerItemDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
+
 import javax.validation.Valid;
 import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -40,23 +44,31 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable("itemId") Long itemId,
-                           @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public AnswerItemDto getItem(@PathVariable("itemId") Long itemId,
+                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("GET /items/{} : get item by ID from user ID {}", itemId, userId);
         return itemService.getItem(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<AnswerItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("GET /items : get list of items from user ID {}", userId);
         return itemService.getItemsByUser(userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getAvailableItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                           @RequestParam String text) {
-        log.info("GET /items : get list of available items of user ID {} with text {}", userId, text);
+    public List<ItemDto> getUsersAvailableItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                @RequestParam String text) {
+        log.info("GET /items/search?text={} : get list of available items of user ID {} with text", text, userId);
         return itemService.getAvailableItems(userId, text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@PathVariable Long itemId,
+                                    @Valid @RequestBody CommentDto commentDto,
+                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("POST /items/{}/comment : user ID {} creates comment - {}", itemId, userId, commentDto);
+        return itemService.createComment(itemId, userId, commentDto);
     }
 
 }
