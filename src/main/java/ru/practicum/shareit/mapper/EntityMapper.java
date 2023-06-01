@@ -61,6 +61,9 @@ public interface EntityMapper { //один маппер на все энтити
 
     Booking toBooking(BookingDto bookingDto);
 
+    @Mapping(target = "id", source = "bookingDto.id")
+    Booking toBooking(BookingDto bookingDto, Item item, User booker);
+
     @Mapping(target = "bookerId", source = "booker.id")
     InfoBookingDto toInfoBookingDto(Booking booking);
 

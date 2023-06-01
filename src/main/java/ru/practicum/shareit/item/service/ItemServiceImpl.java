@@ -49,8 +49,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(Long userId, ItemDto itemDto) throws EntityNotFoundException {
-        UserDto owner = userService.getUser(userId);
-        itemDto.setOwner(mapper.toUser(owner));
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " does not exist"));
+        itemDto.setOwner(owner);
         return mapper.toItemDto(itemRepository.save(mapper.toItem(itemDto)));
     }
 
