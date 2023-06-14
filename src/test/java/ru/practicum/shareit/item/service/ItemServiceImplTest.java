@@ -82,7 +82,7 @@ class ItemServiceImplTest {
     @BeforeEach
     void beforeEach() {
         pageable =  PageRequest.of(0, 10);
-        itemService = new ItemServiceImpl(userService, bookingRepository, commentRepository,
+        itemService = new ItemServiceImpl(bookingRepository, commentRepository,
                 itemRepository, userRepository, itemRequestRepository, mapper);
         user1 = new User(1L, "user1", "mail1@ya.ru");
         user2 = new User(2L, "user2", "mail2@ya.ru");
@@ -95,7 +95,6 @@ class ItemServiceImplTest {
                 item1, user2, APPROVED);
         booking2 = new Booking(2L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                 item1, user2, APPROVED);
-
     }
 
     @Test
