@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -10,10 +11,10 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.EntityNotAvailable;
-import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.exception.ServerError;
-import ru.practicum.shareit.exception.UnsupportedState;
+import ru.practicum.shareit.exceptions.EntityNotAvailable;
+import ru.practicum.shareit.exceptions.EntityNotFoundException;
+import ru.practicum.shareit.exceptions.ServerError;
+import ru.practicum.shareit.exceptions.UnsupportedState;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.mapper.EntityMapper;
@@ -38,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final EntityMapper mapper;
 
+
     @Override
     public AnswerBookingDto createBooking(Long userId, BookingDto bookingDto) {
         Long itemId = bookingDto.getItemId();
@@ -55,7 +57,9 @@ public class BookingServiceImpl implements BookingService {
         if (booker.getId().equals(item.getOwner().getId())) {
             throw new EntityNotFoundException("User with ID " + userId + " trying to book his/her own item");
         }
-        Booking booking = mapper.toBooking(bookingDto, item, booker);
+        Booking booking = mapper.toBooking(bookingDto);
+        booking.setItem(item);
+        booking.setBooker(booker);
         booking.setStatus(Status.WAITING);
         return mapper.toAnswerBookingDto(bookingRepository.save(booking));
     }
@@ -90,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<AnswerBookingDto> getAllBookingByUser(Long userId, String rawState) {
+    public List<AnswerBookingDto> getAllBookingByUser(Long userId, String rawState, Pageable pageable) {
         State state = getState(rawState);
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User with ID " + userId + " does not exist");
@@ -98,7 +102,7 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByBooker_IdOrderByStartDesc(userId, pageable);
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByBooker_IdAndEndIsBefore(userId, LocalDateTime.now(), SORT);
@@ -124,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<AnswerBookingDto> getAllBookingByOwner(Long userId, String rawState) {
+    public List<AnswerBookingDto> getAllBookingByOwner(Long userId, String rawState, Pageable pageable) {
         State state = getState(rawState);
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User with ID " + userId + " does not exist");
@@ -132,7 +136,7 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(userId, pageable);
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndEndIsBefore(userId, LocalDateTime.now(), SORT);
@@ -167,5 +171,4 @@ public class BookingServiceImpl implements BookingService {
         }
         return state;
     }
-
 }
