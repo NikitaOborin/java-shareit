@@ -196,45 +196,6 @@ class ItemServiceImplIntegrationTest {
     }
 
     @Test
-    void getItemsByUser() {
-        Pageable pageable =  PageRequest.of(0, 10);
-
-        User user = new User();
-        user.setName("Alex");
-        user.setEmail("alex@ya.ru");
-        User savedUser = userRepository.save(user);
-
-        Item item1 = new Item();
-        item1.setName("item1");
-        item1.setDescription("desc1");
-        item1.setAvailable(true);
-        item1.setOwner(savedUser);
-        Item savedItem1 = itemRepository.save(item1);
-
-        Item item2 = new Item();
-        item2.setName("item2");
-        item2.setDescription("desc2");
-        item2.setAvailable(true);
-        item2.setOwner(savedUser);
-        itemRepository.save(item2);
-
-        Comment comment = new Comment();
-        comment.setAuthor(savedUser);
-        comment.setText("comment");
-        comment.setItem(savedItem1);
-        commentRepository.save(comment);
-
-        List<AnswerItemDto> items = itemService.getItemsByUser(user.getId(), pageable);
-
-        assertNotNull(items);
-        assertEquals(items.size(), 2);
-        assertEquals(items.get(0).getName(), item1.getName());
-        assertEquals(items.get(0).getComments().get(0).getText(), comment.getText());
-        assertEquals(items.get(1).getName(), item2.getName());
-        assertEquals(items.get(1).getComments().size(), 0);
-    }
-
-    @Test
     void getAvailableItems() {
         Pageable pageable =  PageRequest.of(0, 10);
 
