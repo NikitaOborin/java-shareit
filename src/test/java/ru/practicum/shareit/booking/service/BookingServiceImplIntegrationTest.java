@@ -78,6 +78,9 @@ class BookingServiceImplIntegrationTest {
     void createBooking() {
         User savedBooker = userRepository.save(booker);
 
+        User owner = new User();
+        owner.setName("owner");
+        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
         item.setOwner(savedOwner);
@@ -134,6 +137,9 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void createBooking_bookerIsOwner() {
+        User owner = new User();
+        owner.setName("owner");
+        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
         item.setOwner(savedOwner);
