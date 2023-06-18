@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = BookingController.class)
 @AutoConfigureMockMvc
+@DisplayName("tests for booking controller")
 class BookingControllerTest {
 
     @MockBean
@@ -79,6 +81,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("should successfully create booking")
     void createBooking() throws Exception {
         when(bookingService.createBooking(anyLong(), any())).thenReturn(answerBookingDto);
 
@@ -96,6 +99,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("should successfully create booking with start in past")
     void createBooking_startInPast() throws Exception {
         bookingDto.setStart(LocalDateTime.now().minusDays(5));
 
@@ -109,6 +113,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("should successfully confirmation booking")
     void confirmationBooking() throws Exception {
         answerBookingDto.setStatus(Status.APPROVED);
         when(bookingService.confirmationBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(answerBookingDto);
@@ -127,6 +132,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("should successfully get booking")
     void getBooking() throws Exception {
         when(bookingService.getBooking(anyLong(), anyLong())).thenReturn(answerBookingDto);
 
@@ -143,6 +149,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("should successfully get all booking by user")
     void getAllBookingByUser() throws Exception {
         when(bookingService.getAllBookingByUser(anyLong(), any(), any())).thenReturn(List.of(answerBookingDto));
 
@@ -160,6 +167,7 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("should successfully get all booking by owner")
     void getAllBookingByOwner() throws Exception {
         when(bookingService.getAllBookingByOwner(anyLong(), any(), any())).thenReturn(List.of(answerBookingDto));
 
@@ -176,4 +184,25 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].status", is(answerBookingDto.getStatus().toString())));
     }
 
+    @Test
+    @DisplayName("get all owners bookings by state should throw exception")
+    void getAllOwnersBookingsByStateShouldThrowException() throws Exception {
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "UNSUPPORTED_STATE")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("get all users bookings by state should throw exception")
+    public void getAllUsersBookingsByStateShouldThrowException() throws Exception {
+        mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "DIJFIJSFIJDIJFIOJS")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
 }

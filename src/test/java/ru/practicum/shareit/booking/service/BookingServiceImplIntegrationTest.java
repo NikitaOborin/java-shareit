@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,26 +43,46 @@ class BookingServiceImplIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
 
+    User booker;
+    User owner;
+    Item item;
+    Booking booking;
+    BookingDto bookingDto;
+    LocalDateTime now;
+    Pageable pageable;
+
+    @BeforeEach
+    void beforeEach() {
+        booker = new User(1L, "booker", "booker@ya.ru");
+        owner = new User(1L, "owner", "owner@ya.ru");
+        item = new Item(1L, "item", "desc", true, owner, null);
+        booking = new Booking(
+                1L,
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                item,
+                booker,
+                Status.WAITING);
+        bookingDto = new BookingDto(
+                1L,
+                booking.getStart(),
+                booking.getEnd(),
+                item.getId(),
+                booker.getId(),
+                Status.WAITING);
+        now = LocalDateTime.now();
+        pageable =  PageRequest.of(0, 10);
+    }
+
     @Test
     void createBooking() {
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
-        userRepository.save(booker);
+        User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
         item.setOwner(savedOwner);
-        item.setAvailable(true);
         Item savedItem = itemRepository.save(item);
 
-        BookingDto bookingDto = new BookingDto();
         bookingDto.setItemId(savedItem.getId());
         bookingDto.setStart(LocalDateTime.now().plusHours(1));
         bookingDto.setEnd(LocalDateTime.now().plusHours(2));
@@ -80,24 +101,14 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void createBooking_itemUnavailable() {
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
-        userRepository.save(booker);
+        User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
         item.setOwner(savedOwner);
         item.setAvailable(false);
         Item savedItem = itemRepository.save(item);
 
-        BookingDto bookingDto = new BookingDto();
         bookingDto.setItemId(savedItem.getId());
         bookingDto.setStart(LocalDateTime.now().plusHours(1));
         bookingDto.setEnd(LocalDateTime.now().plusHours(2));
@@ -107,24 +118,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void createBooking_startAfterEnd() {
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
-        userRepository.save(booker);
+        User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
         item.setOwner(savedOwner);
-        item.setAvailable(true);
         Item savedItem = itemRepository.save(item);
 
-        BookingDto bookingDto = new BookingDto();
         bookingDto.setItemId(savedItem.getId());
         bookingDto.setStart(LocalDateTime.now().plusHours(2));
         bookingDto.setEnd(LocalDateTime.now().plusHours(1));
@@ -134,19 +134,11 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void createBooking_bookerIsOwner() {
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
         item.setOwner(savedOwner);
-        item.setAvailable(true);
         Item savedItem = itemRepository.save(item);
 
-        BookingDto bookingDto = new BookingDto();
         bookingDto.setItemId(savedItem.getId());
         bookingDto.setStart(LocalDateTime.now().plusHours(1));
         bookingDto.setEnd(LocalDateTime.now().plusHours(2));
@@ -156,28 +148,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void confirmationBooking_updateStatusToApproved() {
-        LocalDateTime now = LocalDateTime.now();
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
-        booking.setStatus(Status.WAITING);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
         Booking savedBooking = bookingRepository.save(booking);
@@ -190,29 +167,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void confirmationBooking_updateStatusToRejected() {
-        LocalDateTime now = LocalDateTime.now();
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
-        booking.setStatus(Status.WAITING);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
         Booking savedBooking = bookingRepository.save(booking);
@@ -226,29 +187,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void confirmationBooking_wrongBookingId() {
-        LocalDateTime now = LocalDateTime.now();
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
-        booking.setStatus(Status.WAITING);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
         bookingRepository.save(booking);
@@ -259,11 +204,6 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void confirmationBooking_notByOwner() {
-        LocalDateTime now = LocalDateTime.now();
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
         User owner = new User();
@@ -271,17 +211,9 @@ class BookingServiceImplIntegrationTest {
         owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
-        booking.setStatus(Status.WAITING);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
         Booking savedBooking = bookingRepository.save(booking);
@@ -292,28 +224,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void confirmationBooking_ifStatusConfirmed() {
-        LocalDateTime now = LocalDateTime.now();
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
         booking.setStatus(Status.APPROVED);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
@@ -325,28 +242,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void getBooking() {
-        LocalDateTime now = LocalDateTime.now();
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
         booking.setStatus(Status.APPROVED);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
@@ -360,28 +262,13 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void getBooking_byThirdUser() {
-        LocalDateTime now = LocalDateTime.now();
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
         booking.setStatus(Status.APPROVED);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
@@ -394,13 +281,6 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void getAllBookingByUser() {
-        LocalDateTime now = LocalDateTime.now();
-        Pageable pageable =  PageRequest.of(0, 10);
-
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
         User booker2 = new User();
@@ -408,19 +288,11 @@ class BookingServiceImplIntegrationTest {
         booker2.setEmail("booker2@ya.ru");
         User savedBooker2 = userRepository.save(booker2);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
-        Booking booking = new Booking();
         booking.setStart(now.plusHours(1));
         booking.setEnd(now.plusHours(2));
         booking.setStatus(Status.APPROVED);
@@ -455,13 +327,6 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     void getAllBookingByOwner() {
-        LocalDateTime now = LocalDateTime.now();
-        Pageable pageable =  PageRequest.of(0, 10);
-
-
-        User booker = new User();
-        booker.setName("booker");
-        booker.setEmail("booker@ya.ru");
         User savedBooker = userRepository.save(booker);
 
         User booker2 = new User();
@@ -469,15 +334,8 @@ class BookingServiceImplIntegrationTest {
         booker2.setEmail("booker2@ya.ru");
         User savedBooker2 = userRepository.save(booker2);
 
-        User owner = new User();
-        owner.setName("owner");
-        owner.setEmail("owner@ya.ru");
         User savedOwner = userRepository.save(owner);
 
-        Item item = new Item();
-        item.setName("item");
-        item.setDescription("desc");
-        item.setAvailable(true);
         item.setOwner(savedOwner);
         Item savedItem = itemRepository.save(item);
 
@@ -488,9 +346,6 @@ class BookingServiceImplIntegrationTest {
         item2.setOwner(booker2);
         Item savedItem2 = itemRepository.save(item2);
 
-        Booking booking = new Booking();
-        booking.setStart(now.plusHours(1));
-        booking.setEnd(now.plusHours(2));
         booking.setStatus(Status.APPROVED);
         booking.setItem(savedItem);
         booking.setBooker(savedBooker);
@@ -520,5 +375,4 @@ class BookingServiceImplIntegrationTest {
         assertEquals(actualBookingsUser.get(0).getId(), sBooking2.getId());
         assertEquals(actualBookingsUser.get(1).getId(), sBooking.getId());
     }
-
 }

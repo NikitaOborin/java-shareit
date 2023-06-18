@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -188,6 +188,8 @@ class BookingServiceImplTest {
         assertEquals(res.getItem().getId(), answerBookingDto.getItem().getId());
         assertEquals(res.getBooker().getId(), answerBookingDto.getBooker().getId());
         assertEquals(res.getStatus(), answerBookingDto.getStatus());
+
+        verify(bookingRepository, times(1)).findById(any());
     }
 
     @Test
