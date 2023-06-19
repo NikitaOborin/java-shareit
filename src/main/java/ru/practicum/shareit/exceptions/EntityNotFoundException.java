@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exception;
+package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 
