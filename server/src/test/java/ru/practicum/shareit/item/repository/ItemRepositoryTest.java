@@ -59,6 +59,26 @@ class ItemRepositoryTest {
     }
 
     @Test
+    void findByOwner_Id() {
+        List<Item> res = itemRepository.findByOwner_IdOrderById(user2.getId(), pageable);
+
+        assertEquals(res.size(), 2);
+
+        assertEquals(res.get(0).getId(), item2.getId());
+        assertEquals(res.get(0).getName(), item2.getName());
+        assertEquals(res.get(0).getDescription(), item2.getDescription());
+        assertEquals(res.get(0).getAvailable(), item2.getAvailable());
+        assertEquals(res.get(0).getOwner().toString(), item2.getOwner().toString());
+
+        assertEquals(res.get(1).getId(), item3.getId());
+        assertEquals(res.get(1).getName(), item3.getName());
+        assertEquals(res.get(1).getDescription(), item3.getDescription());
+        assertEquals(res.get(1).getAvailable(), item3.getAvailable());
+        assertEquals(res.get(1).getOwner().toString(), item3.getOwner().toString());
+        assertEquals(res.get(1).getRequest(), item3.getRequest());
+    }
+
+    @Test
     void searchAvailableItems_textInLowerCase() {
         List<Item> res = itemRepository.searchAvailableItems("%carrot%", pageable);
 

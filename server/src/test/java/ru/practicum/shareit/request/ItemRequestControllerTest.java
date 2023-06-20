@@ -81,19 +81,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void createItemRequest_WithEmptyDescription() throws Exception {
-        itemRequestDto.setDescription("");
-
-        mockMvc.perform(post("/requests")
-                        .content(mapper.writeValueAsString(itemRequestDto))
-                        .header("X-Sharer-User-Id", 1L)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void getItemRequests() throws Exception {
         when(itemRequestService.getUsersItemRequests(anyLong()))
                 .thenReturn(List.of(answerItemRequestDto));

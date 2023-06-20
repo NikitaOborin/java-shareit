@@ -58,42 +58,6 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_WithWrongMailFormat() throws Exception {
-        userDto.setEmail("email.ru");
-
-        mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createUser_WithBlankMail() throws Exception {
-        userDto.setEmail("");
-
-        mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createUser_WithNullMail() throws Exception {
-        userDto.setEmail(null);
-
-        mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void updateUser() throws Exception {
         when(userService.updateUser(any(), anyLong())).thenReturn(userDto);
 

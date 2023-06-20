@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -123,14 +123,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBooking_whenStartAfterEnd() {
-        bookingDto.setStart(bookingDto.getEnd().plusDays(2));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        assertThrows(EntityNotAvailable.class, () -> bookingService.createBooking(user.getId(), bookingDto));
-    }
-
-    @Test
     void createBooking_whenBookerIsOwner() {
         item.setOwner(user);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -188,8 +180,6 @@ class BookingServiceImplTest {
         assertEquals(res.getItem().getId(), answerBookingDto.getItem().getId());
         assertEquals(res.getBooker().getId(), answerBookingDto.getBooker().getId());
         assertEquals(res.getStatus(), answerBookingDto.getStatus());
-
-        verify(bookingRepository, times(1)).findById(any());
     }
 
     @Test

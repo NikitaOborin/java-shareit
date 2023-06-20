@@ -25,7 +25,6 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,9 +45,6 @@ import static ru.practicum.shareit.booking.model.Status.APPROVED;
 class ItemServiceImplTest {
 
     ItemService itemService;
-
-    @Autowired
-    UserService userService;
 
     @MockBean
     BookingRepository bookingRepository;
@@ -95,6 +91,7 @@ class ItemServiceImplTest {
                 item1, user2, APPROVED);
         booking2 = new Booking(2L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                 item1, user2, APPROVED);
+
     }
 
     @Test
@@ -175,6 +172,44 @@ class ItemServiceImplTest {
         assertEquals(res.getLastBooking().toString(), mapper.toInfoBookingDto(booking1).toString());
         assertEquals(res.getNextBooking().toString(), mapper.toInfoBookingDto(booking2).toString());
         assertEquals(res.getComments().size(), 0);
+    }
+
+    @Test
+    void getItemsByUser() {
+        List<Item> items = List.of(item1, item2);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRepository.findByOwner_IdOrderById(anyLong(), any())).thenReturn(items);
+        when(commentRepository.findAllByItemsId(any())).thenReturn(List.of());
+        when(bookingRepository.findFirstByItem_IdInAndItem_Owner_IdAndStartIsBefore(any(), anyLong(), any(), any()))
+                .thenReturn(List.of(booking1));
+        when(bookingRepository.findFirstByItem_IdInAndItem_Owner_IdAndStartIsAfterAndStatusIsNotAndStatusIsNot(
+                any(), anyLong(), any(), any(), any(), any())).thenReturn(List.of(booking2));
+
+        List<AnswerItemDto> res = itemService.getItemsByUser(user1.getId(), pageable);
+
+        assertEquals(res.size(), 2);
+
+        assertEquals(AnswerItemDto.class, res.get(0).getClass());
+        assertEquals(res.get(0).getId(), item1.getId());
+        assertEquals(res.get(0).getName(), item1.getName());
+        assertEquals(res.get(0).getDescription(), item1.getDescription());
+        assertEquals(res.get(0).getAvailable(), item1.getAvailable());
+        assertEquals(res.get(0).getOwner().toString(), mapper.toUserDto(user1).toString());
+        assertEquals(res.get(0).getRequestId(), item1.getRequest().getId());
+        assertEquals(res.get(0).getLastBooking().toString(), mapper.toInfoBookingDto(booking1).toString());
+        assertEquals(res.get(0).getNextBooking().toString(), mapper.toInfoBookingDto(booking2).toString());
+        assertEquals(res.get(0).getComments().size(), 0);
+
+        assertEquals(AnswerItemDto.class, res.get(1).getClass());
+        assertEquals(res.get(1).getId(), item2.getId());
+        assertEquals(res.get(1).getName(), item2.getName());
+        assertEquals(res.get(1).getDescription(), item2.getDescription());
+        assertEquals(res.get(1).getAvailable(), item2.getAvailable());
+        assertEquals(res.get(1).getOwner().toString(), mapper.toUserDto(user1).toString());
+        assertNull(res.get(1).getRequestId());
+        assertNull(res.get(1).getLastBooking());
+        assertNull(res.get(1).getNextBooking());
+        assertEquals(res.get(1).getComments().size(), 0);
     }
 
     @Test
