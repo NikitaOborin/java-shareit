@@ -44,7 +44,6 @@ class ItemRequestRepositoryTest {
         itemRequestRepository.save(itemRequest3);
     }
 
-
     @Test
     void findAllByRequesterIdOrderByCreatedDesc_userWithoutRequests() {
         List<ItemRequest> res = itemRequestRepository

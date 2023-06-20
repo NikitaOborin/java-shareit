@@ -25,6 +25,7 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,6 +46,9 @@ import static ru.practicum.shareit.booking.model.Status.APPROVED;
 class ItemServiceImplTest {
 
     ItemService itemService;
+
+    @Autowired
+    UserService userService;
 
     @MockBean
     BookingRepository bookingRepository;
@@ -78,7 +82,7 @@ class ItemServiceImplTest {
     @BeforeEach
     void beforeEach() {
         pageable =  PageRequest.of(0, 10);
-        itemService = new ItemServiceImpl(bookingRepository, commentRepository,
+        itemService = new ItemServiceImpl(userService, bookingRepository, commentRepository,
                 itemRepository, userRepository, itemRequestRepository, mapper);
         user1 = new User(1L, "user1", "mail1@ya.ru");
         user2 = new User(2L, "user2", "mail2@ya.ru");

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public interface EntityMapper { //один маппер на все энтити, понимаю, что так не делают, позвольте сделать исключение мне)
+public interface EntityMapper {
 
     default Item toItem(ItemDto itemDto, User owner, ItemRequest request) {
         return Item.builder()
@@ -75,9 +75,6 @@ public interface EntityMapper { //один маппер на все энтити
     }
 
     Booking toBooking(BookingDto bookingDto);
-
-    @Mapping(target = "id", source = "bookingDto.id")
-    Booking toBooking(BookingDto bookingDto, Item item, User booker);
 
     @Mapping(target = "bookerId", source = "booker.id")
     InfoBookingDto toInfoBookingDto(Booking booking);

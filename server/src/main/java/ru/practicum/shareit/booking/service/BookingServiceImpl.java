@@ -54,7 +54,9 @@ public class BookingServiceImpl implements BookingService {
         if (booker.getId().equals(item.getOwner().getId())) {
             throw new EntityNotFoundException("User with ID " + userId + " trying to book his/her own item");
         }
-        Booking booking = mapper.toBooking(bookingDto, item, booker);
+        Booking booking = mapper.toBooking(bookingDto);
+        booking.setItem(item);
+        booking.setBooker(booker);
         booking.setStatus(Status.WAITING);
         return mapper.toAnswerBookingDto(bookingRepository.save(booking));
     }
