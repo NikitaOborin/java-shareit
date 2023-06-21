@@ -8,6 +8,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.client.BaseClient;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public class BookingClient extends BaseClient {
         return get("/" + bookingId, userId);
     }
 
-    public ResponseEntity<Object> getAllBookingByUser(Long userId, String state, int from, int size) {
+    public ResponseEntity<Object> getAllBookingByUser(Long userId, State state, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
                 "from", from,
@@ -47,7 +48,7 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getAllBookingByOwner(Long userId, String state, int from, int size) {
+    public ResponseEntity<Object> getAllBookingByOwner(Long userId, State state, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
                 "from", from,
